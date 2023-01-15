@@ -63,6 +63,7 @@ export type AuthParamList = {
   SignIn: undefined;
   SignUp: {};
   Welcome: {};
+  Profile: {};
 };
 
 export type AuthNavProps<T extends keyof AuthParamList> = {
