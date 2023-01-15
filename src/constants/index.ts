@@ -3,7 +3,9 @@ import { Dimensions } from "react-native";
 export const SCREEN_WIDTH: number = Dimensions.get("screen").width;
 export const SCREEN_HEIGHT: number = Dimensions.get("screen").height;
 
-export const constants = {};
+export const constants = {
+  SET_USER: "SET_USER",
+};
 
 export const COLORS = {
   main: "#045757",

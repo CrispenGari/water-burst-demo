@@ -4,7 +4,7 @@ import Tabs from "./app";
 import Auth from "./auth";
 
 const Routes = () => {
-  const user: any = false;
+  const user: any = true;
   return (
     <NavigationContainer>{!!user ? <Tabs /> : <Auth />}</NavigationContainer>
   );

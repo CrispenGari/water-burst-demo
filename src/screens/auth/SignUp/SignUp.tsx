@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   KeyboardAvoidingView,
 } from "react-native";
+import { pick } from "lodash";
 import React, { useRef, useState } from "react";
 import { COLORS, FONTS, SCREEN_HEIGHT } from "../../../constants";
 import { LinearGradient } from "expo-linear-gradient";
@@ -31,8 +32,43 @@ const SignUp: React.FunctionComponent<AuthNavProps<"SignUp">> = ({
   const signUp = async () => {
     if (password !== conf) {
       setError("The two passwords must match.");
+      return;
     }
-    console.log({ password, conf, error, email });
+
+    // await createUserWithEmailAndPassword(
+    //   auth,
+    //   email.trim().toLowerCase(),
+    //   password.trim()
+    // )
+    //   .then(async ({ user }) => {
+    //     const _user = pick(user, [
+    //       "displayName",
+    //       "email",
+    //       "phoneNumber",
+    //       "emailVerified",
+    //       "photoURL",
+    //       "uid",
+    //     ]);
+    //     await setDoc(
+    //       doc(db, "users", _user.uid),
+    //       {
+    //         user: _user,
+    //       },
+    //       {
+    //         merge: true,
+    //       }
+    //     )
+    //       .then(() => {})
+    //       .catch((err) => console.log(err));
+    //   })
+    //   .catch((error) => {
+    //     setError(
+    //       error.message
+    //       // (error.message as string).includes("email")
+    //       //   ? "The email address is invalid or it has already been taken."
+    //       //   : "The password must contain at least 6 characters."
+    //     );
+    //   });
   };
   return (
     <LinearGradient
