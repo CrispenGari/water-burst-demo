@@ -19,7 +19,7 @@ const Routes = () => {
         dispatch(
           setUser({
             user,
-            isLoggedIn: true,
+            isLoggedIn: !!user.displayName,
           })
         );
       } else {
@@ -40,7 +40,7 @@ const Routes = () => {
 
   return (
     <NavigationContainer>
-      {isLoggedIn ? <Tabs /> : <Auth />}
+      {isLoggedIn && !!user ? <Tabs /> : <Auth />}
     </NavigationContainer>
   );
 };

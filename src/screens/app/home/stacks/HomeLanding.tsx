@@ -12,6 +12,7 @@ import { useLocationPermission } from "../../../../hooks";
 import MapView, { Callout, MapTypes, Marker } from "react-native-maps";
 import * as Location from "expo-location";
 import { TouchableOpacity } from "react-native-gesture-handler";
+import { BoxIndicator } from "../../../../components";
 
 const Landing: React.FC<HomeStackNavProps<"HomeLanding">> = ({
   navigation,
@@ -64,6 +65,19 @@ const Landing: React.FC<HomeStackNavProps<"HomeLanding">> = ({
     };
   }, [location]);
 
+  if (!!!location)
+    return (
+      <View
+        style={{
+          backgroundColor: COLORS.dark,
+          flex: 1,
+          justifyContent: "center",
+          alignItems: "center",
+        }}
+      >
+        <BoxIndicator size={30} color={COLORS.main} />
+      </View>
+    );
   return (
     <ScrollView style={{ backgroundColor: COLORS.dark, flex: 1 }}>
       {!!location ? (

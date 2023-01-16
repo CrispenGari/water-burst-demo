@@ -80,6 +80,7 @@ const SignUp: React.FunctionComponent<AuthNavProps<"SignUp">> = ({
                 isLoggedIn: false,
               })
             );
+            navigation.replace("Profile", {});
           })
           .catch((err) => {
             setLoading(false);
@@ -296,10 +297,19 @@ const SignUp: React.FunctionComponent<AuthNavProps<"SignUp">> = ({
                     />
                   )
                 }
-                secureTextEntry={hidePassword}
+                secureTextEntry={hideConfPassword}
                 onRightIconPress={() => setHideConfPassword((state) => !state)}
               />
-              <Text style={{ color: "red" }}>{error}</Text>
+
+              <Text
+                style={{
+                  color: "red",
+                  fontFamily: FONTS.regular,
+                  fontSize: 16,
+                }}
+              >
+                {error}
+              </Text>
               <TouchableOpacity
                 style={{
                   width: "80%",

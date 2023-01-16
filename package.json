@@ -16,6 +16,7 @@
     "@react-navigation/core": "^6.4.0",
     "@react-navigation/native": "^6.0.13",
     "@react-navigation/stack": "^6.3.2",
+    "base-64": "^1.0.0",
     "dotenv": "^16.0.3",
     "expo": "~46.0.13",
     "expo-battery": "~6.3.0",
@@ -46,6 +47,7 @@
   },
   "devDependencies": {
     "@babel/core": "^7.12.9",
+    "@types/base-64": "^1.0.0",
     "@types/lodash": "^4.14.191",
     "@types/react": "~18.0.14",
     "@types/react-native": "~0.69.1",

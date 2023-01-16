@@ -10,22 +10,32 @@ import React, { useRef, useState } from "react";
 import { COLORS, FONTS, SCREEN_HEIGHT } from "../../../constants";
 import { LinearGradient } from "expo-linear-gradient";
 import { AuthNavProps } from "../../../params";
-import { CustomTextInput } from "../../../components";
+import { BoxIndicator, CustomTextInput } from "../../../components";
 import { AntDesign } from "@expo/vector-icons";
 import { Entypo } from "@expo/vector-icons";
 import * as ImagePicker from "expo-image-picker";
+import { useSelector } from "react-redux";
+import { StateType } from "../../../types";
+import { updateProfile } from "firebase/auth";
+import { auth, db, storage } from "../../../firebase";
+import { setDoc, doc } from "firebase/firestore";
+import { ref, getDownloadURL, uploadBytes } from "firebase/storage";
+
+import { useDispatch } from "react-redux";
+import { setUser } from "../../../actions";
+
 const Profile: React.FunctionComponent<AuthNavProps<"Profile">> = ({
   navigation,
 }) => {
-  // const {granted: camera} = useCameraPermission()
-  // const {granted: gallery} = useImageLibraryPermission()
-
+  const user = useSelector((state: StateType) => state.user);
   const [firstName, setFirstName] = useState<string>("");
   const [lastName, setLastName] = useState<string>("");
   const [phoneNumber, setPhoneNumber] = useState<string>("");
-  const [image, setImage] = useState<string>("");
+  const [image, setImage] = useState<ImagePicker.ImagePickerResult>();
   const scrollViewRef = useRef<React.LegacyRef<ScrollView> | any>();
   const [error, setError] = useState<string>("");
+  const [loading, setLoading] = useState<boolean>(false);
+  const dispatch = useDispatch();
 
   const selectProfile = async () => {
     const { granted } = await ImagePicker.getMediaLibraryPermissionsAsync();
@@ -39,7 +49,7 @@ const Profile: React.FunctionComponent<AuthNavProps<"Profile">> = ({
         allowsMultipleSelection: false,
       });
       if (image.cancelled) return;
-      setImage(image.uri);
+      setImage(image);
     } else {
       const { granted } =
         await ImagePicker.requestMediaLibraryPermissionsAsync();
@@ -53,7 +63,7 @@ const Profile: React.FunctionComponent<AuthNavProps<"Profile">> = ({
         allowsMultipleSelection: false,
       });
       if (image.cancelled) return;
-      setImage(image.uri);
+      setImage(image);
     }
   };
   const takeProfile = async () => {
@@ -68,7 +78,7 @@ const Profile: React.FunctionComponent<AuthNavProps<"Profile">> = ({
         allowsMultipleSelection: false,
       });
       if (image.cancelled) return;
-      setImage(image.uri);
+      setImage(image);
     } else {
       const { granted } = await ImagePicker.requestCameraPermissionsAsync();
       if (!granted) return;
@@ -81,12 +91,101 @@ const Profile: React.FunctionComponent<AuthNavProps<"Profile">> = ({
         allowsMultipleSelection: false,
       });
       if (image.cancelled) return;
-      setImage(image.uri);
+      setImage(image);
     }
   };
 
   const saveProfile = async () => {
-    console.log({ firstName, error, phoneNumber, lastName });
+    if (firstName.trim().length < 3) {
+      setError("First name must be at least 3 characters.");
+      return;
+    }
+    if (lastName.trim().length < 3) {
+      setError("Last name must be at least 3 characters.");
+      return;
+    }
+    if (!!!user?.user) {
+      setError("Authentication error the user is invalid!");
+    }
+    setLoading(true);
+    if (!!!image?.cancelled) {
+      const childName = user.user?.uid + ".jpg";
+      const uploadRef = ref(storage, `profiles/${childName}`);
+      const blob = await new Promise((resolve, reject) => {
+        const xhr = new XMLHttpRequest();
+        xhr.onload = function () {
+          resolve(xhr.response);
+        };
+        xhr.onerror = function () {
+          reject(new TypeError("Network request failed"));
+        };
+        xhr.responseType = "blob";
+        xhr.open("GET", image?.uri as any, true);
+        xhr.send(null);
+      });
+      await uploadBytes(uploadRef, blob as any).then((snapshot) => {
+        getDownloadURL(snapshot.ref)
+          .then(async (url) => {
+            await setDoc(
+              doc(db, "users", user.user?.uid as any),
+              {
+                user: {
+                  photoURL: url,
+                },
+              },
+              {
+                merge: true,
+              }
+            ).catch((error) => console.log(error));
+            if (auth.currentUser) {
+              await updateProfile(auth.currentUser, {
+                photoURL: url,
+              }).catch((error) => console.log(error));
+            }
+          })
+          .catch((e) => setError(e.message))
+          .finally(() => {
+            setLoading(false);
+          });
+      });
+    }
+    setLoading(true);
+    await setDoc(
+      doc(db, "users", user.user?.uid as any),
+      {
+        user: {
+          displayName: `${firstName.trim()} ${lastName.trim()}`,
+          phoneNumber,
+        },
+      },
+      {
+        merge: true,
+      }
+    )
+      .then(() => {})
+      .catch((err) => setError(err.message))
+      .finally(() => setLoading(false));
+    setLoading(true);
+    if (auth.currentUser) {
+      await updateProfile(auth.currentUser, {
+        displayName: `${firstName.trim()} ${lastName.trim()}`,
+      })
+        .then(() => {
+          setPhoneNumber("");
+          setFirstName("");
+          setLastName("");
+        })
+        .catch((err) => setError(err.message))
+        .finally(() => {
+          setLoading(false);
+          dispatch(
+            setUser({
+              user,
+              isLoggedIn: true,
+            })
+          );
+        });
+    }
   };
   return (
     <LinearGradient
@@ -106,6 +205,23 @@ const Profile: React.FunctionComponent<AuthNavProps<"Profile">> = ({
         y: 1,
       }}
     >
+      {loading ? (
+        <View
+          style={{
+            position: "absolute",
+            top: 0,
+            right: 0,
+            bottom: 0,
+            left: 0,
+            zIndex: 10,
+            backgroundColor: "rgba(0, 0, 0, .3)",
+            justifyContent: "center",
+            alignItems: "center",
+          }}
+        >
+          <BoxIndicator size={20} color={COLORS.green} />
+        </View>
+      ) : null}
       <KeyboardAvoidingView
         keyboardVerticalOffset={0}
         behavior="padding"
@@ -211,11 +327,12 @@ const Profile: React.FunctionComponent<AuthNavProps<"Profile">> = ({
               >
                 <Image
                   source={{
-                    uri: !!image
-                      ? image
-                      : Image.resolveAssetSource(
-                          require("../../../../assets/default-avatar.jpg")
-                        ).uri,
+                    uri:
+                      image?.cancelled || !!!image?.uri
+                        ? Image.resolveAssetSource(
+                            require("../../../../assets/default-avatar.jpg")
+                          ).uri
+                        : image.uri,
                   }}
                   style={{
                     width: 200,
@@ -292,7 +409,16 @@ const Profile: React.FunctionComponent<AuthNavProps<"Profile">> = ({
                   marginBottom: 10,
                 }}
               />
-              <Text style={{ color: "red" }}>{error}</Text>
+
+              <Text
+                style={{
+                  color: "red",
+                  fontFamily: FONTS.regular,
+                  fontSize: 16,
+                }}
+              >
+                {error}
+              </Text>
               <TouchableOpacity
                 style={{
                   width: "80%",

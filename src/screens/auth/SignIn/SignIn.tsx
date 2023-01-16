@@ -10,12 +10,16 @@ import React, { useRef, useState } from "react";
 import { COLORS, FONTS, SCREEN_HEIGHT } from "../../../constants";
 import { LinearGradient } from "expo-linear-gradient";
 import { AuthNavProps } from "../../../params";
-import { CustomTextInput } from "../../../components";
+import { BoxIndicator, CustomTextInput } from "../../../components";
 import {
   MaterialCommunityIcons,
   AntDesign,
   FontAwesome,
 } from "@expo/vector-icons";
+import { signInWithEmailAndPassword } from "firebase/auth";
+import { auth } from "../../../firebase";
+import { setUser } from "../../../actions";
+import { useDispatch } from "react-redux";
 
 const SignIn: React.FunctionComponent<AuthNavProps<"SignIn">> = ({
   navigation,
@@ -24,11 +28,34 @@ const SignIn: React.FunctionComponent<AuthNavProps<"SignIn">> = ({
   const [password, setPassword] = useState<string>("");
   const [hidePassword, setHidePassword] = useState<boolean>(true);
   const scrollViewRef = useRef<React.LegacyRef<ScrollView> | any>();
-
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string>("");
-
+  const dispatch = useDispatch();
   const signIn = async () => {
-    console.log({ password, error, email });
+    setLoading(true);
+    await signInWithEmailAndPassword(
+      auth,
+      email ? email.trim().toLowerCase() : "",
+      password ? password.trim() : ""
+    )
+      .then(async ({ user }) => {
+        setError("");
+        setEmail("");
+        setPassword("");
+        dispatch(
+          setUser({
+            user,
+            isLoggedIn: true,
+          })
+        );
+      })
+      .catch((error) => {
+        setError("Invalid email address or password.");
+        setPassword("");
+      })
+      .finally(() => {
+        setLoading(false);
+      });
   };
   return (
     <LinearGradient
@@ -48,6 +75,23 @@ const SignIn: React.FunctionComponent<AuthNavProps<"SignIn">> = ({
         y: 1,
       }}
     >
+      {loading ? (
+        <View
+          style={{
+            position: "absolute",
+            top: 0,
+            right: 0,
+            bottom: 0,
+            left: 0,
+            zIndex: 10,
+            backgroundColor: "rgba(0, 0, 0, .3)",
+            justifyContent: "center",
+            alignItems: "center",
+          }}
+        >
+          <BoxIndicator size={20} color={COLORS.green} />
+        </View>
+      ) : null}
       <KeyboardAvoidingView
         keyboardVerticalOffset={0}
         behavior="padding"
@@ -193,7 +237,15 @@ const SignIn: React.FunctionComponent<AuthNavProps<"SignIn">> = ({
                 onSubmitEditing={signIn}
               />
 
-              <Text style={{ color: "red" }}>{error}</Text>
+              <Text
+                style={{
+                  color: "red",
+                  fontFamily: FONTS.regular,
+                  fontSize: 16,
+                }}
+              >
+                {error}
+              </Text>
               <TouchableOpacity
                 style={{
                   width: "80%",
