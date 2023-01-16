@@ -2,7 +2,12 @@ import React from "react";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { AppParamList } from "../../params";
 import { TabIcon } from "../../components";
-import { Ionicons, AntDesign, MaterialIcons } from "@expo/vector-icons";
+import {
+  Ionicons,
+  AntDesign,
+  MaterialIcons,
+  Octicons,
+} from "@expo/vector-icons";
 import { Home, NewProblem, Notifications, Profile } from "../../screens/app";
 import { COLORS } from "../../constants";
 
@@ -66,8 +71,8 @@ const App = () => {
               {...props}
               title="new problem"
               Icon={{
-                name: "grade",
-                IconComponent: MaterialIcons,
+                name: "issue-reopened",
+                IconComponent: Octicons,
               }}
             />
           ),

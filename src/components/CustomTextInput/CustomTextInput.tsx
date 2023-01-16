@@ -28,6 +28,8 @@ interface Props {
     e: NativeSyntheticEvent<TextInputSubmitEditingEventData>
   ) => void;
   onRightIconPress?: () => void;
+  numberOfLines?: number;
+  multiline?: boolean;
 }
 const CustomTextInput: React.FunctionComponent<Props> = ({
   placeholder,
@@ -42,6 +44,8 @@ const CustomTextInput: React.FunctionComponent<Props> = ({
   onSubmitEditing,
   secureTextEntry,
   onRightIconPress,
+  multiline,
+  numberOfLines,
 }) => {
   return (
     <View
@@ -79,6 +83,8 @@ const CustomTextInput: React.FunctionComponent<Props> = ({
         editable={editable}
         onSubmitEditing={onSubmitEditing}
         secureTextEntry={secureTextEntry}
+        numberOfLines={numberOfLines}
+        multiline={multiline}
       />
       <TouchableOpacity activeOpacity={0.7} onPress={onRightIconPress}>
         {rightIcon}

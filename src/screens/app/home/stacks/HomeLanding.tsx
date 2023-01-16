@@ -1,21 +1,23 @@
-import { Text, ScrollView, View } from "react-native";
+import { Text, ScrollView, View, Image, FlatList } from "react-native";
 import React, { useEffect, useLayoutEffect, useState } from "react";
 import { HomeStackNavProps } from "../../../../params";
-import { Ionicons } from "@expo/vector-icons";
 import {
   COLORS,
   FONTS,
+  mapTypes,
   SCREEN_HEIGHT,
   SCREEN_WIDTH,
 } from "../../../../constants";
 import { useLocationPermission } from "../../../../hooks";
-import MapView, { Callout, Marker } from "react-native-maps";
+import MapView, { Callout, MapTypes, Marker } from "react-native-maps";
 import * as Location from "expo-location";
+import { TouchableOpacity } from "react-native-gesture-handler";
 
 const Landing: React.FC<HomeStackNavProps<"HomeLanding">> = ({
   navigation,
 }) => {
   const { granted } = useLocationPermission();
+  const [mapType, setMapType] = useState<MapTypes>("none");
   const [location, setLocation] = useState<Location.LocationObject>();
   const [currentReversedLocation, setCurrentReversedLocation] =
     useState<Location.LocationGeocodedAddress>();
@@ -63,19 +65,23 @@ const Landing: React.FC<HomeStackNavProps<"HomeLanding">> = ({
   }, [location]);
 
   return (
-    <View style={{ backgroundColor: "white" }}>
+    <ScrollView style={{ backgroundColor: COLORS.dark, flex: 1 }}>
       {!!location ? (
         <MapView
           initialRegion={{
             latitude: location.coords.latitude,
             longitude: location.coords.longitude,
-            latitudeDelta: 0.01,
-            longitudeDelta: 0.01,
+            latitudeDelta: 1,
+            longitudeDelta: 1,
           }}
           zoomControlEnabled
+          minZoomLevel={7}
+          showsUserLocation={true}
+          liteMode
+          mapType={mapType}
           style={{
             width: SCREEN_WIDTH,
-            height: SCREEN_HEIGHT,
+            height: SCREEN_HEIGHT / 2,
           }}
         >
           <Marker
@@ -83,7 +89,6 @@ const Landing: React.FC<HomeStackNavProps<"HomeLanding">> = ({
               latitude: location.coords.latitude,
               longitude: location.coords.longitude,
             }}
-            icon={require("../../../../../assets/location-marker.png")}
           >
             <Callout>
               <Text
@@ -99,7 +104,123 @@ const Landing: React.FC<HomeStackNavProps<"HomeLanding">> = ({
           </Marker>
         </MapView>
       ) : null}
-    </View>
+      <View>
+        <View
+          style={{
+            padding: 10,
+          }}
+        >
+          <Text
+            style={{
+              color: COLORS.gray,
+              fontFamily: FONTS.regularBold,
+              fontSize: 20,
+              marginBottom: 2,
+            }}
+          >
+            Map Styles
+          </Text>
+          <Text
+            style={{
+              color: COLORS.gray,
+              fontFamily: FONTS.regular,
+              marginBottom: 10,
+            }}
+          >
+            Select a map style you want
+          </Text>
+          <FlatList
+            data={mapTypes}
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            keyExtractor={(item) => item}
+            renderItem={({ item, index }) => (
+              <TouchableOpacity
+                key={item}
+                onPress={() => setMapType(item as any)}
+                style={{
+                  backgroundColor:
+                    item === mapType
+                      ? COLORS.gray
+                      : index % 2 === 0
+                      ? COLORS.main
+                      : COLORS.green,
+                  padding: 10,
+                  width: 100,
+                  height: 50,
+                  marginRight: 3,
+                  justifyContent: "center",
+                  alignItems: "center",
+                }}
+              >
+                <Text
+                  style={{
+                    color: item === mapType ? COLORS.main : COLORS.gray,
+                    textTransform: "capitalize",
+                  }}
+                >
+                  {item}
+                </Text>
+              </TouchableOpacity>
+            )}
+          />
+        </View>
+        <View style={{ padding: 10 }}>
+          <Text
+            style={{
+              color: COLORS.gray,
+              fontFamily: FONTS.regularBold,
+              fontSize: 20,
+              marginBottom: 2,
+            }}
+          >
+            {currentReversedLocation?.name}
+          </Text>
+          <Text
+            style={{
+              color: COLORS.gray,
+              fontFamily: FONTS.regular,
+              fontSize: 16,
+              marginBottom: 2,
+            }}
+          >
+            {currentReversedLocation?.district}
+          </Text>
+          <Text
+            style={{
+              color: COLORS.gray,
+              fontFamily: FONTS.regular,
+              fontSize: 16,
+              marginBottom: 2,
+            }}
+          >
+            {`${currentReversedLocation?.city} (${currentReversedLocation?.region})`}
+          </Text>
+          <Text
+            style={{
+              color: COLORS.gray,
+              fontFamily: FONTS.regular,
+              fontSize: 16,
+              marginBottom: 2,
+            }}
+          >
+            {`${
+              currentReversedLocation?.country
+            } (${currentReversedLocation?.isoCountryCode?.toLocaleLowerCase()})`}
+          </Text>
+          <Text
+            style={{
+              color: COLORS.gray,
+              fontFamily: FONTS.regular,
+              fontSize: 16,
+              marginBottom: 2,
+            }}
+          >
+            {currentReversedLocation?.postalCode}
+          </Text>
+        </View>
+      </View>
+    </ScrollView>
   );
 };
 
