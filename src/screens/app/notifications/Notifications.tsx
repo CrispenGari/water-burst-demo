@@ -1,10 +1,11 @@
 import { View, Text } from "react-native";
-import React from "react";
+import React, { useLayoutEffect } from "react";
 import { createStackNavigator } from "@react-navigation/stack";
-import { NotificationsStackParamList } from "../../params";
+import { AppNavProps, NotificationsStackParamList } from "../../../params";
 import NotificationsLanding from "./stacks/NotificationsLanding";
+
 const Stack = createStackNavigator<NotificationsStackParamList>();
-const Notifications = () => {
+const Notifications: React.FunctionComponent = ({}) => {
   return (
     <Stack.Navigator initialRouteName="NotificationsLanding">
       <Stack.Screen

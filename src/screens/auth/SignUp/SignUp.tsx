@@ -11,16 +11,22 @@ import React, { useRef, useState } from "react";
 import { COLORS, FONTS, SCREEN_HEIGHT } from "../../../constants";
 import { LinearGradient } from "expo-linear-gradient";
 import { AuthNavProps } from "../../../params";
-import { CustomTextInput } from "../../../components";
+import { BoxIndicator, CustomTextInput } from "../../../components";
 import {
   MaterialCommunityIcons,
   AntDesign,
   FontAwesome,
 } from "@expo/vector-icons";
+import { createUserWithEmailAndPassword } from "firebase/auth";
+import { setDoc, doc } from "firebase/firestore";
+import { auth, db } from "../../../firebase";
+import { useDispatch } from "react-redux";
+import { setUser } from "../../../actions";
 
 const SignUp: React.FunctionComponent<AuthNavProps<"SignUp">> = ({
   navigation,
 }) => {
+  const dispatch = useDispatch();
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const [hidePassword, setHidePassword] = useState<boolean>(true);
@@ -28,6 +34,7 @@ const SignUp: React.FunctionComponent<AuthNavProps<"SignUp">> = ({
   const scrollViewRef = useRef<React.LegacyRef<ScrollView> | any>();
   const [conf, setConf] = useState<string>("");
   const [error, setError] = useState<string>("");
+  const [loading, setLoading] = useState(false);
 
   const signUp = async () => {
     if (password !== conf) {
@@ -35,40 +42,58 @@ const SignUp: React.FunctionComponent<AuthNavProps<"SignUp">> = ({
       return;
     }
 
-    // await createUserWithEmailAndPassword(
-    //   auth,
-    //   email.trim().toLowerCase(),
-    //   password.trim()
-    // )
-    //   .then(async ({ user }) => {
-    //     const _user = pick(user, [
-    //       "displayName",
-    //       "email",
-    //       "phoneNumber",
-    //       "emailVerified",
-    //       "photoURL",
-    //       "uid",
-    //     ]);
-    //     await setDoc(
-    //       doc(db, "users", _user.uid),
-    //       {
-    //         user: _user,
-    //       },
-    //       {
-    //         merge: true,
-    //       }
-    //     )
-    //       .then(() => {})
-    //       .catch((err) => console.log(err));
-    //   })
-    //   .catch((error) => {
-    //     setError(
-    //       error.message
-    //       // (error.message as string).includes("email")
-    //       //   ? "The email address is invalid or it has already been taken."
-    //       //   : "The password must contain at least 6 characters."
-    //     );
-    //   });
+    setLoading(true);
+    await createUserWithEmailAndPassword(
+      auth,
+      email.trim().toLowerCase(),
+      password.trim()
+    )
+      .then(async ({ user }) => {
+        const _user = pick(user, [
+          "displayName",
+          "email",
+          "phoneNumber",
+          "emailVerified",
+          "photoURL",
+          "uid",
+        ]);
+        await setDoc(
+          doc(db, "users", _user.uid),
+          {
+            user: _user,
+          },
+          {
+            merge: true,
+          }
+        )
+          .then(() => {
+            setLoading(false);
+            setError("");
+            setEmail("");
+            setPassword("");
+            setConf("");
+            setHideConfPassword(true);
+            setHidePassword(true);
+            dispatch(
+              setUser({
+                user,
+                isLoggedIn: false,
+              })
+            );
+          })
+          .catch((err) => {
+            setLoading(false);
+            console.log(err);
+          });
+      })
+      .catch((error) => {
+        setLoading(false);
+        setError(
+          (error.message as string).includes("email")
+            ? "The email address is invalid or it has already been taken."
+            : "The password must contain at least 6 characters."
+        );
+      });
   };
   return (
     <LinearGradient
@@ -88,6 +113,23 @@ const SignUp: React.FunctionComponent<AuthNavProps<"SignUp">> = ({
         y: 1,
       }}
     >
+      {loading ? (
+        <View
+          style={{
+            position: "absolute",
+            top: 0,
+            right: 0,
+            bottom: 0,
+            left: 0,
+            zIndex: 10,
+            backgroundColor: "rgba(0, 0, 0, .3)",
+            justifyContent: "center",
+            alignItems: "center",
+          }}
+        >
+          <BoxIndicator size={20} color={COLORS.green} />
+        </View>
+      ) : null}
       <KeyboardAvoidingView
         keyboardVerticalOffset={0}
         behavior="padding"
@@ -138,7 +180,7 @@ const SignUp: React.FunctionComponent<AuthNavProps<"SignUp">> = ({
                   marginBottom: 20,
                 }}
               >
-                SIGN IN
+                SIGN UP
               </Text>
               <Image
                 style={{
@@ -165,7 +207,6 @@ const SignUp: React.FunctionComponent<AuthNavProps<"SignUp">> = ({
               >
                 {"<App Name>"}
               </Text>
-
               <Text
                 style={{
                   fontSize: 16,

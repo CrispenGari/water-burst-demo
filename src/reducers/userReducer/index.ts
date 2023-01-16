@@ -2,7 +2,10 @@ import { constants } from "../../constants";
 import { ActionType } from "../../types";
 
 export const userReducer = (
-  state: any = null,
+  state = {
+    user: null,
+    isLoggedIn: false,
+  },
   {
     payload,
     type,

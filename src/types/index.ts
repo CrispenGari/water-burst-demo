@@ -3,4 +3,9 @@ export interface ActionType<T> {
   type: string;
 }
 
-export interface StateType {}
+export interface StateType {
+  user: {
+    user: any;
+    isLoggedIn: boolean;
+  };
+}

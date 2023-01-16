@@ -3,10 +3,13 @@ import React from "react";
 import { AuthNavProps } from "../../../params";
 import { COLORS, FONTS } from "../../../constants";
 import { LinearGradient } from "expo-linear-gradient";
+import { useLocationPermission } from "../../../hooks";
 
 const Welcome: React.FunctionComponent<AuthNavProps<"Welcome">> = ({
   navigation,
 }) => {
+  const {} = useLocationPermission();
+
   return (
     <LinearGradient
       colors={[COLORS.green, "rgba(0, 0, 0, .5)"]}

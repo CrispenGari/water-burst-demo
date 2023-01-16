@@ -1,16 +1,23 @@
 import { ScrollView, Text, View, Dimensions } from "react-native";
-import React from "react";
-import { FONTS } from "../../../../constants";
+import React, { useLayoutEffect } from "react";
+import { COLORS, FONTS } from "../../../../constants";
 import { NotificationsStackNavProps } from "../../../../params";
 
 const Landing: React.FC<NotificationsStackNavProps<"NotificationsLanding">> = ({
   navigation,
 }) => {
-  React.useLayoutEffect(() => {
+  useLayoutEffect(() => {
     navigation.setOptions({
-      title: "NOTIFICATIONS",
+      title: "Your Issues",
       headerTitleStyle: {
         fontFamily: FONTS.regularBold,
+        color: COLORS.gray,
+      },
+      headerStyle: {
+        backgroundColor: COLORS.main,
+        elevation: 0,
+        borderBottomColor: "transparent",
+        borderBottomWidth: 0,
       },
     });
   }, []);
