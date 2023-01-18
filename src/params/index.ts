@@ -50,6 +50,14 @@ export type NotificationsStackNavProps<
 // Profile Stacks Param List
 export type ProfileStackParamList = {
   ProfileLanding: undefined;
+  TnC: undefined;
+  Developers: undefined;
+  LanguageSettings: undefined;
+  ContactDetails: undefined;
+  NotificationsSettings: undefined;
+  PersonalInformation: undefined;
+  ChangePasswordSettings: undefined;
+  DeleteAccountSettings: undefined;
 };
 
 export type ProfileStackNavProps<T extends keyof ProfileStackParamList> = {

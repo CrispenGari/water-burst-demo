@@ -1,4 +1,4 @@
-import { View, ScrollView } from "react-native";
+import { View, ScrollView, Text } from "react-native";
 import React, { useLayoutEffect, useState } from "react";
 import { ProfileStackNavProps } from "../../../../params";
 import { FONTS, COLORS } from "../../../../constants";
@@ -9,6 +9,7 @@ import {
   ProfileCard,
   SignOutButton,
 } from "../../../../components";
+import { TouchableOpacity } from "react-native-gesture-handler";
 
 const ProfileLanding: React.FunctionComponent<
   ProfileStackNavProps<"ProfileLanding">
@@ -19,16 +20,6 @@ const ProfileLanding: React.FunctionComponent<
   useLayoutEffect(() => {
     navigation.setOptions({
       title: user?.displayName,
-      headerTitleStyle: {
-        fontFamily: FONTS.regularBold,
-        color: COLORS.gray,
-      },
-      headerStyle: {
-        backgroundColor: COLORS.main,
-        elevation: 0,
-        borderBottomColor: "transparent",
-        borderBottomWidth: 0,
-      },
     });
   }, [user]);
 
@@ -52,6 +43,170 @@ const ProfileLanding: React.FunctionComponent<
         </View>
       ) : null}
       <ProfileCard setLoading={setLoading} />
+
+      <TouchableOpacity
+        style={{
+          paddingVertical: 15,
+          borderBottomColor: COLORS.gray,
+          borderBottomWidth: 0.5,
+        }}
+        activeOpacity={0.7}
+        onPress={() => navigation.navigate("PersonalInformation")}
+      >
+        <Text
+          style={{
+            color: COLORS.gray,
+            fontFamily: FONTS.regular,
+            fontSize: 20,
+            letterSpacing: 1,
+          }}
+        >
+          Personal Information
+        </Text>
+      </TouchableOpacity>
+      <TouchableOpacity
+        style={{
+          paddingVertical: 15,
+          borderBottomColor: COLORS.gray,
+          borderBottomWidth: 0.5,
+        }}
+        activeOpacity={0.7}
+        onPress={() => navigation.navigate("NotificationsSettings")}
+      >
+        <Text
+          style={{
+            color: COLORS.gray,
+            fontFamily: FONTS.regular,
+            fontSize: 20,
+            letterSpacing: 1,
+          }}
+        >
+          Notification Settings
+        </Text>
+      </TouchableOpacity>
+      <TouchableOpacity
+        style={{
+          paddingVertical: 15,
+          borderBottomColor: COLORS.gray,
+          borderBottomWidth: 0.5,
+        }}
+        activeOpacity={0.7}
+        onPress={() => navigation.navigate("ContactDetails")}
+      >
+        <Text
+          style={{
+            color: COLORS.gray,
+            fontFamily: FONTS.regular,
+            fontSize: 20,
+            letterSpacing: 1,
+          }}
+        >
+          Contact Details
+        </Text>
+      </TouchableOpacity>
+      <TouchableOpacity
+        style={{
+          paddingVertical: 15,
+          borderBottomColor: COLORS.gray,
+          borderBottomWidth: 0.5,
+        }}
+        activeOpacity={0.7}
+        onPress={() => navigation.navigate("LanguageSettings")}
+      >
+        <Text
+          style={{
+            color: COLORS.gray,
+            fontFamily: FONTS.regular,
+            fontSize: 20,
+            letterSpacing: 1,
+          }}
+        >
+          Language Settings
+        </Text>
+      </TouchableOpacity>
+      <TouchableOpacity
+        style={{
+          paddingVertical: 15,
+          borderBottomColor: COLORS.gray,
+          borderBottomWidth: 0.5,
+        }}
+        activeOpacity={0.7}
+        onPress={() => navigation.navigate("ChangePasswordSettings")}
+      >
+        <Text
+          style={{
+            color: COLORS.gray,
+            fontFamily: FONTS.regular,
+            fontSize: 20,
+            letterSpacing: 1,
+          }}
+        >
+          Password Manager
+        </Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity
+        style={{
+          paddingVertical: 15,
+          borderBottomColor: COLORS.gray,
+          borderBottomWidth: 0.5,
+        }}
+        activeOpacity={0.7}
+        onPress={() => navigation.navigate("DeleteAccountSettings")}
+      >
+        <Text
+          style={{
+            color: COLORS.gray,
+            fontFamily: FONTS.regular,
+            fontSize: 20,
+            letterSpacing: 1,
+          }}
+        >
+          Delete Account Settings
+        </Text>
+      </TouchableOpacity>
+      <TouchableOpacity
+        style={{
+          paddingVertical: 15,
+          borderBottomColor: COLORS.gray,
+          borderBottomWidth: 0.5,
+        }}
+        activeOpacity={0.7}
+        onPress={() => navigation.navigate("Developers")}
+      >
+        <Text
+          style={{
+            color: COLORS.gray,
+            fontFamily: FONTS.regular,
+            fontSize: 20,
+            letterSpacing: 1,
+          }}
+        >
+          Developers
+        </Text>
+      </TouchableOpacity>
+      <TouchableOpacity
+        style={{
+          paddingVertical: 15,
+          borderBottomColor: COLORS.gray,
+          borderBottomWidth: 0.5,
+          marginBottom: 30,
+        }}
+        activeOpacity={0.7}
+        onPress={() => navigation.navigate("TnC")}
+      >
+        <Text
+          style={{
+            color: COLORS.gray,
+            fontFamily: FONTS.regular,
+            fontSize: 20,
+            letterSpacing: 1,
+          }}
+        >
+          TnC
+        </Text>
+      </TouchableOpacity>
+
       <SignOutButton setLoading={setLoading} />
     </ScrollView>
   );
