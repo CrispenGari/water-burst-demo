@@ -21,29 +21,33 @@ export type HomeStackParamList = {
 };
 
 export type HomeStackNavProps<T extends keyof HomeStackParamList> = {
-  navigation: BottomTabNavigationProp<HomeStackParamList, T>;
+  navigation: StackNavigationProp<HomeStackParamList, T>;
   route: RouteProp<HomeStackParamList, T>;
 };
 // NewProblem Stacks Param List
 export type NewProblemStackParamList = {
   NewProblemLanding: undefined;
+  NewIssueSubmittedResult: {
+    issue: any;
+  };
 };
 
 export type NewProblemStackNavProps<T extends keyof NewProblemStackParamList> =
   {
-    navigation: BottomTabNavigationProp<NewProblemStackParamList, T>;
+    navigation: StackNavigationProp<NewProblemStackParamList, T>;
     route: RouteProp<NewProblemStackParamList, T>;
   };
 
 // Notifications Stacks Param List
 export type NotificationsStackParamList = {
   NotificationsLanding: undefined;
+  IssueDetails: {};
 };
 
 export type NotificationsStackNavProps<
   T extends keyof NotificationsStackParamList
 > = {
-  navigation: BottomTabNavigationProp<NotificationsStackParamList, T>;
+  navigation: StackNavigationProp<NotificationsStackParamList, T>;
   route: RouteProp<NotificationsStackParamList, T>;
 };
 
@@ -61,7 +65,7 @@ export type ProfileStackParamList = {
 };
 
 export type ProfileStackNavProps<T extends keyof ProfileStackParamList> = {
-  navigation: BottomTabNavigationProp<ProfileStackParamList, T>;
+  navigation: StackNavigationProp<ProfileStackParamList, T>;
   route: RouteProp<ProfileStackParamList, T>;
 };
 

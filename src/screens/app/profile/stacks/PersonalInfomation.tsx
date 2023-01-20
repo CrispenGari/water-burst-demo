@@ -4,7 +4,11 @@ import { ProfileStackNavProps } from "../../../../params";
 import { FONTS, COLORS } from "../../../../constants";
 import { useSelector } from "react-redux";
 import { StateType } from "../../../../types";
-import { BoxIndicator, CustomTextInput } from "../../../../components";
+import {
+  AppStackBackButton,
+  BoxIndicator,
+  CustomTextInput,
+} from "../../../../components";
 import { AntDesign, MaterialCommunityIcons } from "@expo/vector-icons";
 const PersonalInformation: React.FunctionComponent<
   ProfileStackNavProps<"PersonalInformation">
@@ -19,6 +23,12 @@ const PersonalInformation: React.FunctionComponent<
   useLayoutEffect(() => {
     navigation.setOptions({
       title: "Personal Information",
+      headerLeft: ({ label }) => (
+        <AppStackBackButton
+          label={label as any}
+          onPress={() => navigation.goBack()}
+        />
+      ),
     });
   }, []);
 

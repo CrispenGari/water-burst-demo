@@ -12,6 +12,9 @@ const Home = () => {
       screenOptions={{
         headerStyle: {
           backgroundColor: COLORS.main,
+          elevation: 0,
+          shadowOpacity: 0,
+          borderBottomWidth: 0,
         },
       }}
     >

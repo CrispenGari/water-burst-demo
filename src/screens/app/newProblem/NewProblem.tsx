@@ -6,7 +6,16 @@ import NewProblemLanding from "./stacks/NewProblemLanding";
 const Stack = createStackNavigator<NewProblemStackParamList>();
 const NewProblem = () => {
   return (
-    <Stack.Navigator initialRouteName="NewProblemLanding" screenOptions={{}}>
+    <Stack.Navigator
+      initialRouteName="NewProblemLanding"
+      screenOptions={{
+        headerStyle: {
+          elevation: 0,
+          shadowOpacity: 0,
+          borderBottomWidth: 0,
+        },
+      }}
+    >
       <Stack.Screen name="NewProblemLanding" component={NewProblemLanding} />
     </Stack.Navigator>
   );

@@ -4,7 +4,7 @@ import { ProfileStackNavProps } from "../../../../params";
 import { FONTS, COLORS } from "../../../../constants";
 import { useSelector } from "react-redux";
 import { StateType } from "../../../../types";
-import { BoxIndicator } from "../../../../components";
+import { AppStackBackButton, BoxIndicator } from "../../../../components";
 
 const Developers: React.FunctionComponent<
   ProfileStackNavProps<"Developers">
@@ -14,19 +14,15 @@ const Developers: React.FunctionComponent<
 
   useLayoutEffect(() => {
     navigation.setOptions({
-      title: user?.displayName,
-      headerTitleStyle: {
-        fontFamily: FONTS.regularBold,
-        color: COLORS.gray,
-      },
-      headerStyle: {
-        backgroundColor: COLORS.main,
-        elevation: 0,
-        borderBottomColor: "transparent",
-        borderBottomWidth: 0,
-      },
+      title: "Developers",
+      headerLeft: ({ label }) => (
+        <AppStackBackButton
+          label={label as any}
+          onPress={() => navigation.goBack()}
+        />
+      ),
     });
-  }, [user]);
+  }, []);
 
   return (
     <ScrollView style={{ padding: 10, backgroundColor: COLORS.dark }}>

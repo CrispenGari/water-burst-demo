@@ -3,6 +3,7 @@ import React, { useLayoutEffect } from "react";
 import { createStackNavigator } from "@react-navigation/stack";
 import { AppNavProps, NotificationsStackParamList } from "../../../params";
 import NotificationsLanding from "./stacks/NotificationsLanding";
+import IssueDetails from "./stacks/IssueDetails";
 
 const Stack = createStackNavigator<NotificationsStackParamList>();
 const Notifications: React.FunctionComponent = ({}) => {
@@ -12,6 +13,7 @@ const Notifications: React.FunctionComponent = ({}) => {
         name={"NotificationsLanding"}
         component={NotificationsLanding}
       />
+      <Stack.Screen name={"IssueDetails"} component={IssueDetails} />
     </Stack.Navigator>
   );
 };

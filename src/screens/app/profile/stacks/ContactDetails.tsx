@@ -4,7 +4,7 @@ import { ProfileStackNavProps } from "../../../../params";
 import { FONTS, COLORS } from "../../../../constants";
 import { useSelector } from "react-redux";
 import { StateType } from "../../../../types";
-import { CustomTextInput } from "../../../../components";
+import { AppStackBackButton, CustomTextInput } from "../../../../components";
 import { AntDesign, MaterialCommunityIcons } from "@expo/vector-icons";
 const ContactDetails: React.FunctionComponent<
   ProfileStackNavProps<"ContactDetails">
@@ -14,8 +14,14 @@ const ContactDetails: React.FunctionComponent<
   useLayoutEffect(() => {
     navigation.setOptions({
       title: "Your Contact Details",
+      headerLeft: ({ label }) => (
+        <AppStackBackButton
+          label={label as any}
+          onPress={() => navigation.goBack()}
+        />
+      ),
     });
-  }, [user]);
+  }, []);
 
   return (
     <ScrollView style={{ padding: 10, backgroundColor: COLORS.dark }}>

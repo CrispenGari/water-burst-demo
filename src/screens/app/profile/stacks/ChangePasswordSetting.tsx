@@ -3,6 +3,7 @@ import React, { useLayoutEffect, useState } from "react";
 import { ProfileStackNavProps } from "../../../../params";
 import { FONTS, COLORS } from "../../../../constants";
 import {
+  AppStackBackButton,
   BoxIndicator,
   ChangePasswordCard,
   ResetPasswordCard,
@@ -16,6 +17,12 @@ const ChangePasswordSettings: React.FunctionComponent<
   useLayoutEffect(() => {
     navigation.setOptions({
       title: "Passwords Manager",
+      headerLeft: ({ label }) => (
+        <AppStackBackButton
+          label={label as any}
+          onPress={() => navigation.goBack()}
+        />
+      ),
     });
   }, []);
 

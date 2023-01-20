@@ -4,7 +4,11 @@ import { ProfileStackNavProps } from "../../../../params";
 import { FONTS, COLORS } from "../../../../constants";
 import { useDispatch, useSelector } from "react-redux";
 import { StateType } from "../../../../types";
-import { BoxIndicator, CustomTextInput } from "../../../../components";
+import {
+  AppStackBackButton,
+  BoxIndicator,
+  CustomTextInput,
+} from "../../../../components";
 import { AntDesign, FontAwesome } from "@expo/vector-icons";
 import {
   EmailAuthProvider,
@@ -28,6 +32,12 @@ const DeleteAccountSettings: React.FunctionComponent<
   useLayoutEffect(() => {
     navigation.setOptions({
       title: "Delete Account",
+      headerLeft: ({ label }) => (
+        <AppStackBackButton
+          label={label as any}
+          onPress={() => navigation.goBack()}
+        />
+      ),
     });
   }, []);
 

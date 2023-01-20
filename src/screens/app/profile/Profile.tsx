@@ -27,6 +27,7 @@ const Profile = () => {
           elevation: 0,
           borderBottomColor: "transparent",
           borderBottomWidth: 0,
+          shadowOpacity: 0,
         },
       }}
     >

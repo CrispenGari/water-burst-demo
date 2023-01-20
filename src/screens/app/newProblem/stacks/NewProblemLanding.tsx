@@ -1,3 +1,4 @@
+import "react-native-get-random-values";
 import {
   View,
   Text,
@@ -7,20 +8,29 @@ import {
   Keyboard,
   Image,
   FlatList,
+  Alert,
 } from "react-native";
 import React, { useEffect, useLayoutEffect, useState } from "react";
-import { AppNavProps } from "../../../../params";
-import { FONTS, COLORS, mapTypes } from "../../../../constants";
+import { AppNavProps, NewProblemStackNavProps } from "../../../../params";
+import { FONTS, COLORS, mapTypes, SCREEN_HEIGHT } from "../../../../constants";
 import { useLocationPermission } from "../../../../hooks";
 import * as Location from "expo-location";
-import { CustomTextInput } from "../../../../components";
+import { BoxIndicator, CustomTextInput } from "../../../../components";
 import { Ionicons, Entypo } from "@expo/vector-icons";
 import * as ImagePicker from "expo-image-picker";
 import MapView, { Callout, MapTypes, Marker } from "react-native-maps";
+import { pick } from "lodash";
+import { useSelector } from "react-redux";
+import { StateType } from "../../../../types";
+import { addDoc, collection } from "firebase/firestore";
+import { ref, getDownloadURL, uploadBytes } from "firebase/storage";
+import { storage, db, timestamp } from "../../../../firebase";
+import { v4 as uuid_v4 } from "uuid";
+import { generateBobFile } from "../../../../utils";
 
-const NewProblemLanding: React.FunctionComponent<AppNavProps<"NewProblem">> = ({
-  navigation,
-}) => {
+const NewProblemLanding: React.FunctionComponent<
+  NewProblemStackNavProps<"NewProblemLanding">
+> = ({ navigation }) => {
   const { granted } = useLocationPermission();
   const [problemDescription, setProblemDescription] = useState<string>("");
   const [problemNote, setProblemNote] = useState<string>("");
@@ -30,6 +40,8 @@ const NewProblemLanding: React.FunctionComponent<AppNavProps<"NewProblem">> = ({
     useState<Location.LocationGeocodedAddress>();
   const [mapType, setMapType] = useState<MapTypes>("none");
   const [locationName, setLocationName] = useState<string>("");
+  const { user } = useSelector((state: StateType) => state.user);
+  const [loading, setLoading] = useState(false);
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -45,6 +57,7 @@ const NewProblemLanding: React.FunctionComponent<AppNavProps<"NewProblem">> = ({
         elevation: 0,
         borderBottomColor: "transparent",
         borderBottomWidth: 0,
+        shadowOpacity: 0,
       },
     });
   }, [currentReversedLocation]);
@@ -85,6 +98,16 @@ const NewProblemLanding: React.FunctionComponent<AppNavProps<"NewProblem">> = ({
       setLocationName(currentReversedLocation.name ?? "");
     }
 
+    return () => {
+      mounted = false;
+    };
+  }, [currentReversedLocation]);
+
+  React.useEffect(() => {
+    let mounted: boolean = true;
+    if (mounted && currentReversedLocation) {
+      setLoading(false);
+    }
     return () => {
       mounted = false;
     };
@@ -147,10 +170,105 @@ const NewProblemLanding: React.FunctionComponent<AppNavProps<"NewProblem">> = ({
       setImages([images]);
     }
   };
+
+  const submitIssue = async () => {
+    if (images.length === 0) {
+      Alert.alert(
+        "water-burst-app",
+        "Image(s) are required when submitting a water issue.",
+        [
+          {
+            text: "OK",
+            style: "destructive",
+            onPress: () => {},
+          },
+        ]
+      );
+
+      return;
+    }
+
+    setLoading(true);
+    const geoCoords = pick(location?.coords, ["latitude", "longitude"]);
+    const _issueData = {
+      geoCoords,
+      locationDetails: currentReversedLocation,
+      images: [],
+      problemDescription,
+      problemNote,
+      user: pick(user, [
+        "uid",
+        "email",
+        "displayName",
+        "photoURL",
+        "phoneNumber",
+      ]),
+      timestamp: timestamp,
+      status: "submitted",
+    };
+
+    let _images: string[] = [];
+    if (images.length > 0 && !!user) {
+      try {
+        for (let i = 0; i < images.length; i++) {
+          const { fileName, uri } = images[i];
+          const _fileName =
+            uuid_v4().slice(0, 10) + "." + (fileName as any).split(".")[1];
+          const storageRef = ref(storage, `images/${_fileName}`);
+          await uploadBytes(storageRef, generateBobFile(uri) as any)
+            .then(async (snapshot) => {
+              await getDownloadURL(snapshot.ref)
+                .then(async (url) => {
+                  _images.push(url);
+                })
+                .catch((e) => console.error(e.message));
+            })
+            .catch((error) => console.log({ error }));
+        }
+      } catch (error) {
+        console.log({ error });
+      }
+    }
+
+    if (_images.length === images.length) {
+      await addDoc(collection(db, "issues"), {
+        ..._issueData,
+        images: _images,
+      })
+        .then(async (issue) => {
+          navigation.navigate("NewIssueSubmittedResult", {
+            issue: issue.firestore.toJSON(),
+          });
+        })
+        .catch((error) => {
+          console.log({ error });
+        })
+        .finally(() => {
+          setLoading(false);
+          setProblemDescription("");
+          setImages([]);
+        });
+    }
+  };
+
+  if (!!!currentReversedLocation)
+    return (
+      <View
+        style={{
+          backgroundColor: COLORS.dark,
+          flex: 1,
+          justifyContent: "center",
+          alignItems: "center",
+        }}
+      >
+        <BoxIndicator size={30} color={COLORS.main} />
+      </View>
+    );
   return (
     <TouchableWithoutFeedback
       style={{
         flex: 1,
+        position: "relative",
       }}
       onPress={Keyboard.dismiss}
     >
@@ -161,6 +279,23 @@ const NewProblemLanding: React.FunctionComponent<AppNavProps<"NewProblem">> = ({
           padding: 10,
         }}
       >
+        {loading ? (
+          <View
+            style={{
+              position: "absolute",
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              zIndex: 1,
+              backgroundColor: "rgba(0, 0, 0, .5)",
+              paddingTop: SCREEN_HEIGHT / 2,
+              alignItems: "center",
+            }}
+          >
+            <BoxIndicator size={20} color={COLORS.main} />
+          </View>
+        ) : null}
         <Text
           style={{
             color: COLORS.gray,
@@ -177,6 +312,60 @@ const NewProblemLanding: React.FunctionComponent<AppNavProps<"NewProblem">> = ({
           leftIcon={<Ionicons name="location" size={24} color={COLORS.main} />}
           rightIcon={<Ionicons name="search" size={24} color={COLORS.main} />}
         />
+        <View style={{ padding: 10, alignItems: "flex-end" }}>
+          <Text
+            style={{
+              color: COLORS.gray,
+              fontFamily: FONTS.regularBold,
+              fontSize: 20,
+              marginBottom: 2,
+            }}
+          >
+            {currentReversedLocation?.name}
+          </Text>
+          <Text
+            style={{
+              color: COLORS.gray,
+              fontFamily: FONTS.regular,
+              fontSize: 16,
+              marginBottom: 2,
+            }}
+          >
+            {currentReversedLocation?.district}
+          </Text>
+          <Text
+            style={{
+              color: COLORS.gray,
+              fontFamily: FONTS.regular,
+              fontSize: 16,
+              marginBottom: 2,
+            }}
+          >
+            {`${currentReversedLocation?.city} (${currentReversedLocation?.region})`}
+          </Text>
+          <Text
+            style={{
+              color: COLORS.gray,
+              fontFamily: FONTS.regular,
+              fontSize: 16,
+              marginBottom: 2,
+            }}
+          >
+            {`${
+              currentReversedLocation?.country
+            } (${currentReversedLocation?.isoCountryCode?.toLocaleLowerCase()})`}
+          </Text>
+          <Text
+            style={{
+              color: COLORS.gray,
+              fontFamily: FONTS.regular,
+              fontSize: 16,
+              marginBottom: 2,
+            }}
+          >
+            {currentReversedLocation?.postalCode}
+          </Text>
+        </View>
         {/* Location */}
         {/* decription */}
         <CustomTextInput
@@ -437,7 +626,7 @@ const NewProblemLanding: React.FunctionComponent<AppNavProps<"NewProblem">> = ({
               marginVertical: 20,
             }}
             activeOpacity={0.7}
-            onPress={() => {}}
+            onPress={submitIssue}
           >
             <Text
               style={{

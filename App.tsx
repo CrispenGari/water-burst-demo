@@ -3,7 +3,8 @@ import { StyleSheet, Text, View, LogBox, StatusBar } from "react-native";
 import { useFonts } from "expo-font";
 import ReduxProvider from "./src/providers/ReduxProvider";
 import Routes from "./src/pages/Routes";
-import { Fonts } from "./src/constants";
+import { COLORS, Fonts } from "./src/constants";
+import { BoxIndicator } from "./src/components";
 
 export default function App() {
   const [loaded] = useFonts(Fonts);
@@ -13,7 +14,7 @@ export default function App() {
   if (!loaded) {
     return (
       <View style={styles.container}>
-        <Text>Loading...</Text>
+        <BoxIndicator size={30} color={COLORS.green} />
       </View>
     );
   }

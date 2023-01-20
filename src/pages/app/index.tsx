@@ -10,13 +10,14 @@ const Tab = createBottomTabNavigator<AppParamList>();
 const App = () => {
   return (
     <Tab.Navigator
-      initialRouteName="Profile"
+      initialRouteName="NewProblem"
       screenOptions={{
         headerShown: false,
         tabBarHideOnKeyboard: true,
         tabBarStyle: {
           elevation: 0,
-          borderWidth: 0,
+          shadowOpacity: 0,
+          borderTopWidth: 0,
           borderColor: "transparent",
           backgroundColor: COLORS.main,
           paddingVertical: 10,
