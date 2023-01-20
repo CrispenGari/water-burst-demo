@@ -2,6 +2,7 @@ import React from "react";
 import { createStackNavigator } from "@react-navigation/stack";
 import { NewProblemStackParamList } from "../../../params";
 import NewProblemLanding from "./stacks/NewProblemLanding";
+import NewIssueSubmittedResult from "./stacks/NewIssueSubmittedResult";
 
 const Stack = createStackNavigator<NewProblemStackParamList>();
 const NewProblem = () => {
@@ -17,6 +18,10 @@ const NewProblem = () => {
       }}
     >
       <Stack.Screen name="NewProblemLanding" component={NewProblemLanding} />
+      <Stack.Screen
+        name="NewIssueSubmittedResult"
+        component={NewIssueSubmittedResult}
+      />
     </Stack.Navigator>
   );
 };

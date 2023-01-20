@@ -11,7 +11,7 @@ import {
   Alert,
 } from "react-native";
 import React, { useEffect, useLayoutEffect, useState } from "react";
-import { AppNavProps, NewProblemStackNavProps } from "../../../../params";
+import { NewProblemStackNavProps } from "../../../../params";
 import { FONTS, COLORS, mapTypes, SCREEN_HEIGHT } from "../../../../constants";
 import { useLocationPermission } from "../../../../hooks";
 import * as Location from "expo-location";
@@ -22,11 +22,10 @@ import MapView, { Callout, MapTypes, Marker } from "react-native-maps";
 import { pick } from "lodash";
 import { useSelector } from "react-redux";
 import { StateType } from "../../../../types";
-import { addDoc, collection } from "firebase/firestore";
+import { addDoc, collection, doc, getDoc } from "firebase/firestore";
 import { ref, getDownloadURL, uploadBytes } from "firebase/storage";
 import { storage, db, timestamp } from "../../../../firebase";
 import { v4 as uuid_v4 } from "uuid";
-import { generateBobFile } from "../../../../utils";
 
 const NewProblemLanding: React.FunctionComponent<
   NewProblemStackNavProps<"NewProblemLanding">
@@ -188,6 +187,35 @@ const NewProblemLanding: React.FunctionComponent<
       return;
     }
 
+    if (!!!problemNote) {
+      Alert.alert(
+        "water-burst-app",
+        "Problem Note is required when submitting a water issue.",
+        [
+          {
+            text: "OK",
+            style: "destructive",
+            onPress: () => {},
+          },
+        ]
+      );
+      return;
+    }
+    if (!!!problemDescription) {
+      Alert.alert(
+        "water-burst-app",
+        "Problem description is required when submitting a water issue.",
+        [
+          {
+            text: "OK",
+            style: "destructive",
+            onPress: () => {},
+          },
+        ]
+      );
+      return;
+    }
+
     setLoading(true);
     const geoCoords = pick(location?.coords, ["latitude", "longitude"]);
     const _issueData = {
@@ -215,7 +243,19 @@ const NewProblemLanding: React.FunctionComponent<
           const _fileName =
             uuid_v4().slice(0, 10) + "." + (fileName as any).split(".")[1];
           const storageRef = ref(storage, `images/${_fileName}`);
-          await uploadBytes(storageRef, generateBobFile(uri) as any)
+          const blob = await new Promise((resolve, reject) => {
+            const xhr = new XMLHttpRequest();
+            xhr.onload = function () {
+              resolve(xhr.response);
+            };
+            xhr.onerror = function () {
+              reject(new TypeError("Network request failed"));
+            };
+            xhr.responseType = "blob";
+            xhr.open("GET", uri as any, true);
+            xhr.send(null);
+          });
+          await uploadBytes(storageRef, blob as any)
             .then(async (snapshot) => {
               await getDownloadURL(snapshot.ref)
                 .then(async (url) => {
@@ -236,9 +276,13 @@ const NewProblemLanding: React.FunctionComponent<
         images: _images,
       })
         .then(async (issue) => {
-          navigation.navigate("NewIssueSubmittedResult", {
-            issue: issue.firestore.toJSON(),
-          });
+          const docRef = doc(db, "issues", issue.id);
+          const docSnap = await getDoc(docRef);
+          if (docSnap.exists()) {
+            navigation.navigate("NewIssueSubmittedResult", {
+              issue: JSON.stringify(docSnap.data()),
+            });
+          }
         })
         .catch((error) => {
           console.log({ error });
@@ -246,6 +290,7 @@ const NewProblemLanding: React.FunctionComponent<
         .finally(() => {
           setLoading(false);
           setProblemDescription("");
+          setProblemNote("");
           setImages([]);
         });
     }
@@ -368,6 +413,17 @@ const NewProblemLanding: React.FunctionComponent<
         </View>
         {/* Location */}
         {/* decription */}
+        {/* Note */}
+        <CustomTextInput
+          placeholder="Enter problem note"
+          text={problemNote}
+          onChangeText={(text) => setProblemNote(text)}
+          containerStyles={{
+            marginTop: 10,
+          }}
+          leftIcon={<Entypo name="pencil" size={24} color={COLORS.main} />}
+        />
+
         <CustomTextInput
           placeholder="Enter problem description"
           text={problemDescription}
@@ -461,17 +517,7 @@ const NewProblemLanding: React.FunctionComponent<
             </TouchableOpacity>
           </View>
         </View>
-        {/* Note */}
 
-        <CustomTextInput
-          placeholder="Enter problem note"
-          text={problemNote}
-          onChangeText={(text) => setProblemNote(text)}
-          containerStyles={{
-            marginTop: 10,
-          }}
-          leftIcon={<Entypo name="pencil" size={24} color={COLORS.main} />}
-        />
         {/* map */}
 
         <View
