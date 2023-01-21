@@ -26,6 +26,7 @@ import { addDoc, collection, doc, getDoc } from "firebase/firestore";
 import { ref, getDownloadURL, uploadBytes } from "firebase/storage";
 import { storage, db, timestamp } from "../../../../firebase";
 import { v4 as uuid_v4 } from "uuid";
+import { generateBobFile } from "../../../../utils";
 
 const NewProblemLanding: React.FunctionComponent<
   NewProblemStackNavProps<"NewProblemLanding">
@@ -243,18 +244,7 @@ const NewProblemLanding: React.FunctionComponent<
           const _fileName =
             uuid_v4().slice(0, 10) + "." + (fileName as any).split(".")[1];
           const storageRef = ref(storage, `images/${_fileName}`);
-          const blob = await new Promise((resolve, reject) => {
-            const xhr = new XMLHttpRequest();
-            xhr.onload = function () {
-              resolve(xhr.response);
-            };
-            xhr.onerror = function () {
-              reject(new TypeError("Network request failed"));
-            };
-            xhr.responseType = "blob";
-            xhr.open("GET", uri as any, true);
-            xhr.send(null);
-          });
+          const blob = await generateBobFile(uri);
           await uploadBytes(storageRef, blob as any)
             .then(async (snapshot) => {
               await getDownloadURL(snapshot.ref)
@@ -269,7 +259,6 @@ const NewProblemLanding: React.FunctionComponent<
         console.log({ error });
       }
     }
-
     if (_images.length === images.length) {
       await addDoc(collection(db, "issues"), {
         ..._issueData,

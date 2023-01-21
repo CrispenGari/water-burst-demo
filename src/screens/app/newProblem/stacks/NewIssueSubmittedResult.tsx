@@ -9,7 +9,7 @@ import {
 import React, { useLayoutEffect, useState } from "react";
 import { NewProblemStackNavProps } from "../../../../params";
 import { FONTS, COLORS, mapTypes } from "../../../../constants";
-import { AppStackBackButton } from "../../../../components";
+import { AppStackBackButton, LocationTable } from "../../../../components";
 import MapView, { Callout, MapTypes, Marker } from "react-native-maps";
 
 const NewIssueSubmittedResult: React.FunctionComponent<
@@ -39,8 +39,6 @@ const NewIssueSubmittedResult: React.FunctionComponent<
       ),
     });
   }, []);
-
-  console.log(issue?.images);
   return (
     <ScrollView
       style={{
@@ -263,7 +261,7 @@ const NewIssueSubmittedResult: React.FunctionComponent<
       <View
         style={{
           width: "100%",
-          marginVertical: 10,
+          marginVertical: 20,
         }}
       >
         <Text
@@ -271,7 +269,7 @@ const NewIssueSubmittedResult: React.FunctionComponent<
             color: COLORS.gray,
             fontFamily: FONTS.regularBold,
             fontSize: 20,
-            marginBottom: 2,
+            marginBottom: 10,
           }}
         >
           Issue Images
@@ -285,14 +283,58 @@ const NewIssueSubmittedResult: React.FunctionComponent<
           renderItem={({ item, index }) => (
             <Image
               key={index}
-              style={{ width: 200, height: 100 }}
+              style={{ width: 300, height: 300, marginRight: 5 }}
               source={{ uri: item }}
             />
           )}
         />
       </View>
-      <Text style={{ color: "white" }}>{JSON.stringify(issue, null, 2)}</Text>
+      <View
+        style={{
+          width: "100%",
+          marginVertical: 10,
+        }}
+      >
+        <Text
+          style={{
+            color: COLORS.gray,
+            fontFamily: FONTS.regularBold,
+            fontSize: 20,
+            marginBottom: 10,
+          }}
+        >
+          Issues Location Address Table
+        </Text>
+        {!!Object.entries(issue?.locationDetails).length ? (
+          <LocationTable tableData={Object.entries(issue?.locationDetails)} />
+        ) : null}
+      </View>
 
+      <TouchableOpacity
+        style={{
+          width: "80%",
+          maxWidth: 300,
+          backgroundColor: COLORS.green,
+          alignItems: "center",
+          padding: 10,
+          marginVertical: 20,
+          alignSelf: "center",
+        }}
+        activeOpacity={0.7}
+        onPress={() => navigation.goBack()}
+      >
+        <Text
+          style={{
+            fontSize: 20,
+            marginRight: 10,
+            color: COLORS.gray,
+            textTransform: "uppercase",
+            fontFamily: FONTS.regular,
+          }}
+        >
+          SUBMIT NEW ISSUE
+        </Text>
+      </TouchableOpacity>
       <View style={{ height: 100 }} />
     </ScrollView>
   );
