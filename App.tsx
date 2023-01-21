@@ -20,7 +20,7 @@ const App = () => {
     );
   }
   return (
-    <View style={{ flex: 1, backgroundColor: COLORS.dark, padding: 10 }}>
+    <View style={{ flex: 1, backgroundColor: COLORS.dark }}>
       <StatusBar animated barStyle={"light-content"} />
       <ReduxProvider>
         <Routes />
@@ -35,7 +35,6 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    padding: 10,
     backgroundColor: COLORS.dark,
   },
 });
