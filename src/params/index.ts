@@ -6,7 +6,7 @@ import { StackNavigationProp } from "@react-navigation/stack";
 export type AppParamList = {
   Home: undefined;
   NewProblem: {};
-  Notifications: undefined;
+  Issues: undefined;
   Profile: undefined;
 };
 
@@ -38,17 +38,15 @@ export type NewProblemStackNavProps<T extends keyof NewProblemStackParamList> =
     route: RouteProp<NewProblemStackParamList, T>;
   };
 
-// Notifications Stacks Param List
-export type NotificationsStackParamList = {
-  NotificationsLanding: undefined;
-  IssueDetails: {};
+// Issues Stacks Param List
+export type IssuesStackParamList = {
+  IssuesLanding: undefined;
+  IssueDetails: { issue: any };
 };
 
-export type NotificationsStackNavProps<
-  T extends keyof NotificationsStackParamList
-> = {
-  navigation: StackNavigationProp<NotificationsStackParamList, T>;
-  route: RouteProp<NotificationsStackParamList, T>;
+export type IssuesStackNavProps<T extends keyof IssuesStackParamList> = {
+  navigation: StackNavigationProp<IssuesStackParamList, T>;
+  route: RouteProp<IssuesStackParamList, T>;
 };
 
 // Profile Stacks Param List

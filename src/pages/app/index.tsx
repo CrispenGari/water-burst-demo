@@ -3,14 +3,14 @@ import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { AppParamList } from "../../params";
 import { TabIcon } from "../../components";
 import { AntDesign, MaterialIcons, Octicons } from "@expo/vector-icons";
-import { Home, NewProblem, Notifications, Profile } from "../../screens/app";
+import { Home, NewProblem, Issues, Profile } from "../../screens/app";
 import { COLORS } from "../../constants";
 
 const Tab = createBottomTabNavigator<AppParamList>();
 const App = () => {
   return (
     <Tab.Navigator
-      initialRouteName="NewProblem"
+      initialRouteName="Home"
       screenOptions={{
         headerShown: false,
         tabBarHideOnKeyboard: true,
@@ -22,6 +22,7 @@ const App = () => {
           backgroundColor: COLORS.main,
           paddingVertical: 10,
           height: 80,
+          width: "auto",
         },
         tabBarShowLabel: false,
         tabBarBadgeStyle: {
@@ -39,6 +40,9 @@ const App = () => {
           show: {
             animation: "spring",
           },
+        },
+        tabBarItemStyle: {
+          width: "auto",
         },
       }}
     >
@@ -75,13 +79,13 @@ const App = () => {
         }}
       />
       <Tab.Screen
-        name="Notifications"
-        component={Notifications}
+        name="Issues"
+        component={Issues}
         options={{
           tabBarIcon: (props) => (
             <TabIcon
               {...props}
-              title="notifications"
+              title="your issues"
               Icon={{
                 name: "notification-important",
                 IconComponent: MaterialIcons,

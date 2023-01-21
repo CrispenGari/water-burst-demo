@@ -19,6 +19,7 @@ const TabIcon: React.FC<Props> = ({ focused, Icon, title }) => {
           justifyContent: "center",
           alignItems: "center",
           position: "relative",
+          width: 300,
         },
       ]}
     >

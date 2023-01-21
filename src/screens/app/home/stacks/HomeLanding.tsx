@@ -25,7 +25,7 @@ const Landing: React.FC<HomeStackNavProps<"HomeLanding">> = ({
   useLayoutEffect(() => {
     navigation.setOptions({
       title: currentReversedLocation
-        ? `${currentReversedLocation.name}`
+        ? `Your Location - ${currentReversedLocation.name}`
         : "No Location",
       headerTitleStyle: {
         fontFamily: FONTS.regularBold,
@@ -85,11 +85,11 @@ const Landing: React.FC<HomeStackNavProps<"HomeLanding">> = ({
           initialRegion={{
             latitude: location.coords.latitude,
             longitude: location.coords.longitude,
-            latitudeDelta: 1,
-            longitudeDelta: 1,
+            latitudeDelta: 0.1,
+            longitudeDelta: 0.1,
           }}
           zoomControlEnabled
-          minZoomLevel={7}
+          minZoomLevel={5}
           showsUserLocation={true}
           liteMode
           mapType={mapType}

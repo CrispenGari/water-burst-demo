@@ -7,3 +7,4 @@ export { default as ResetPasswordCard } from "./ResetPasswordCard/ResetPassordCa
 export { default as ChangePasswordCard } from "./ChangePasswordCard/ChangePasswordCard";
 export { default as AppStackBackButton } from "./AppStackBackButton/AppStackBackButton";
 export { default as LocationTable } from "./LocationTable/LocationTable";
+export { default as Issue } from "./Issue/Issue";

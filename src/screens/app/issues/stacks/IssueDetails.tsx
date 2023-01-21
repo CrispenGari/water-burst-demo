@@ -1,20 +1,20 @@
 import {
   View,
   Text,
+  FlatList,
   ScrollView,
   TouchableOpacity,
-  FlatList,
   Image,
 } from "react-native";
 import React, { useLayoutEffect, useState } from "react";
-import { NewProblemStackNavProps } from "../../../../params";
-import { FONTS, COLORS, mapTypes } from "../../../../constants";
 import { AppStackBackButton, LocationTable } from "../../../../components";
+import { IssuesStackNavProps } from "../../../../params";
 import MapView, { Callout, MapTypes, Marker } from "react-native-maps";
+import { COLORS, FONTS, mapTypes } from "../../../../constants";
 
-const NewIssueSubmittedResult: React.FunctionComponent<
-  NewProblemStackNavProps<"NewIssueSubmittedResult">
-> = ({ route, navigation }) => {
+const IssueDetails: React.FunctionComponent<
+  IssuesStackNavProps<"IssueDetails">
+> = ({ navigation, route }) => {
   const [mapType, setMapType] = useState<MapTypes>("none");
   const issue = JSON.parse(route.params.issue);
   useLayoutEffect(() => {
@@ -22,7 +22,7 @@ const NewIssueSubmittedResult: React.FunctionComponent<
       title: issue.problemNote,
       headerLeft: ({}) => (
         <AppStackBackButton
-          label="New Issue"
+          label="Your Issues"
           onPress={() => navigation.goBack()}
         />
       ),
@@ -87,7 +87,6 @@ const NewIssueSubmittedResult: React.FunctionComponent<
           Status: {issue?.status}
         </Text>
       </View>
-
       <View style={{ padding: 10, alignItems: "flex-end" }}>
         <Text
           style={{
@@ -351,11 +350,12 @@ const NewIssueSubmittedResult: React.FunctionComponent<
             fontFamily: FONTS.regular,
           }}
         >
-          SUBMIT NEW ISSUE
+          Your Issues
         </Text>
       </TouchableOpacity>
       <View style={{ height: 100 }} />
     </ScrollView>
   );
 };
-export default NewIssueSubmittedResult;
+
+export default IssueDetails;
