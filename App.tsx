@@ -6,10 +6,11 @@ import Routes from "./src/pages/Routes";
 import { COLORS, Fonts } from "./src/constants";
 import { BoxIndicator } from "./src/components";
 
-export default function App() {
-  const [loaded] = useFonts(Fonts);
+LogBox.ignoreLogs;
+LogBox.ignoreAllLogs();
 
-  LogBox.ignoreLogs;
+const App = () => {
+  const [loaded] = useFonts(Fonts);
 
   if (!loaded) {
     return (
@@ -19,18 +20,22 @@ export default function App() {
     );
   }
   return (
-    <View style={styles.container}>
+    <View style={{ flex: 1, backgroundColor: COLORS.dark, padding: 10 }}>
       <StatusBar animated barStyle={"light-content"} />
       <ReduxProvider>
         <Routes />
       </ReduxProvider>
     </View>
   );
-}
+};
 
+export default App;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#fff",
+    justifyContent: "center",
+    alignItems: "center",
+    padding: 10,
+    backgroundColor: COLORS.dark,
   },
 });
